@@ -6,8 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-
 app.post('/chat', async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -16,6 +14,12 @@ app.post('/chat', async (req, res) => {
       return res.status(400).json({ error: "El mensaje no puede estar vacío." });
     }
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: "Falta la variable GEMINI_API_KEY en Render." });
+    }
+
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash",
       systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y cortés."
@@ -31,8 +35,8 @@ app.post('/chat', async (req, res) => {
     res.json({ reply: responseText });
 
   } catch (error) {
-    console.error("Error en el servidor:", error);
-    res.status(500).json({ error: "Error al procesar la solicitud." });
+    console.error("Error detallado en el servidor:", error);
+    res.status(500).json({ error: `Error en la IA: ${error.message || 'Error desconocido'}` });
   }
 });
 
