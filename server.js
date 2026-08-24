@@ -21,10 +21,9 @@ app.post('/chat', async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Usamos el alias universal para evitar errores de versión
     const model = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash-latest",
-      systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y cortés."
+      systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y muy amable. Estás diseñada especialmente para asistir y acompañar a Luisana en lo que necesite. Siempre refiérete a ella por su nombre cuando sea oportuno."
     });
 
     const chat = model.startChat({
@@ -44,6 +43,5 @@ app.post('/chat', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Servidor activo en el puerto ${PORT}`);
+  console.log(`Servidor de A.U.R.O.R.A. listo para Luisana en el puerto ${PORT}`);
 });
-
