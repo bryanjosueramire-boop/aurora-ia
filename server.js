@@ -21,7 +21,7 @@ app.post('/chat', async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    // Cambiamos al modelo gemini-2.5-flash (o gemini-pro)
+    // Cambiado al modelo que te pide la API
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
       systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y cortés."
