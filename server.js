@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const app = express();
 app.use(cors());
@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.post('/chat', async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "El mensaje no puede estar vacío." });
@@ -19,17 +19,22 @@ app.post('/chat', async (req, res) => {
       return res.status(500).json({ error: "Falta la variable GEMINI_API_KEY en Render." });
     }
 
-    const ai = new GoogleGenAI({ apiKey });
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: message,
-      config: {
-        systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y cortés."
-      }
+    const genAI = new GoogleGenerativeAI(apiKey);
+    
+    // Usamos el alias universal para evitar errores de versión
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash-latest",
+      systemInstruction: "Eres A.U.R.O.R.A., una inteligencia artificial futurista, eficiente y cortés."
     });
 
-    res.json({ reply: response.text });
+    const chat = model.startChat({
+      history: history || []
+    });
+
+    const result = await chat.sendMessage(message);
+    const responseText = result.response.text();
+
+    res.json({ reply: responseText });
 
   } catch (error) {
     console.error("Error en el servidor:", error);
@@ -41,3 +46,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor activo en el puerto ${PORT}`);
 });
+
